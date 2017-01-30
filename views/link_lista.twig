@@ -1,0 +1,7 @@
+{% extends "layout.twig" %}
+
+{% block titulo %}Projeto fase 2{% endblock %}
+
+{% block conteudo %}
+    Acesse o <a href="{{ path('post', { id: id }) }}">link ( {{ url('post', {id: id}) }} )</a>.
+{% endblock %}

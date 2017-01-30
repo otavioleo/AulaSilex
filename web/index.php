@@ -1,6 +1,6 @@
 <?php
 
-//    Projeto fase 1
+//    Projeto fase 2
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -8,28 +8,35 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once 'bootstrap.php';
-$data = array(
-    'id' => array('Scrambler', 'Tracker', 'Bobber', 'Café racer', 'Custom', 'Chopper', 'Esportiva', 'Fun Bike', 'Big biker', 'Maxi-Trail')
-);
 
-$app->get('/posts/{id}', function(Silex\Application $app, $id) use ($data) {
+$app->get('/post/{id}', function(Request $request, $id) use ($em) {
+           $post = $em->find('\SON\Entity\Post', $id);
 
-           $res = "";
-           $c = 0;
-           foreach ($data['id'] as $d) {
-              $c++;
-              if ($c == $id) {
-                 $res = 'id=' . $c . ', conteudo=' . $d . '<br>';
-              }
+           $pesquisa = "
+            <title>Projeto fase 2</title>
+            <br>
+            <h1>Os tipos de motos</h1>
+            <h1>Titulo:{$post->getTitulo()}</h1>
+            <h1>Conteudo:{$post->getConteudo()}</h1>";
+           return $pesquisa;
+        })
+        ->bind('post');
+
+$app->get('/posts/', function(Request $request) use ($em, $app) {
+           $repository = $em->getRepository('\SON\Entity\Post');
+           $listaPosts = $repository->findAll();
+           $lista = "<h1>Os tipos de motos</h1>";
+           foreach ($listaPosts as $post) {
+              $lista .= " 
+        <br>
+        <h1>Titulo:" . $post->getTitulo() . "</h1>
+        <h1>Conteudo:" . $post->getConteudo() . "</h1>
+        <h1>" . $app['twig']->render('link_lista.twig', array('id' => $post->getId())) . "</h1>
+        <br>";
            }
-           if (empty($res)) {
-              $app->abort(404, 'Nao encontrou!');
-           } else {
-//      return($res);
-              return $app['twig']->render('posts.twig', array('res' => $res));
-           }
+
+           return $lista;
         })
         ->bind('posts');
-
 
 $app->run();
